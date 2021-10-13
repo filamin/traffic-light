@@ -1,9 +1,30 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Light from '../views/Light'
 
 Vue.use(VueRouter)
 
-const routes = []
+const routes = [
+  {
+    path: '*',
+    redirect: '/red'
+  },
+  {
+    path: '/red',
+    name: 'red',
+    component: Light
+  },
+  {
+    path: '/yellow',
+    name: 'yellow',
+    component: Light
+  },
+  {
+    path: '/green',
+    name: 'green',
+    component: Light
+  },
+]
 
 const router = new VueRouter({
   mode: 'history',
