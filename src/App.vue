@@ -10,7 +10,17 @@
 <script>
 export default {
   mounted() {
-    this.setNextColor(this.currentColor)
+    const saveStorage = this.saveStorage;
+    const savedData = this.openStorage();
+    window.addEventListener('beforeunload', function () {
+      saveStorage()
+    })
+    if (savedData) {
+      this.lastWasGreen = savedData.lwg
+      this.setNextColor(savedData.color, savedData.time)
+    } else {
+      this.setNextColor(this.currentColor)
+    }
   },
   data() {
     return {
@@ -31,18 +41,18 @@ export default {
     }
   },
   methods: {
-    async setNextColor(color) {
+    async setNextColor(color, sec) {
       switch (color) {
         case 'red':
           this.lastWasGreen = false
-          await this.timer(10,'yellow')
+          await this.timer(sec || 10,'yellow')
           break
         case 'yellow':
-          await this.timer(3, this.lastWasGreen ? 'red' : 'green')
+          await this.timer(sec || 3, this.lastWasGreen ? 'red' : 'green')
           break
         case 'green':
           this.lastWasGreen = true
-          await this.timer(15,'yellow')
+          await this.timer(sec || 15,'yellow')
           break
       }
     },
@@ -62,7 +72,13 @@ export default {
     },
     setDisplayedTime(time) {
       this.displayedTime = time
-    }
+    },
+    openStorage() {
+      return JSON.parse(localStorage.getItem('appStatus'))
+    },
+    saveStorage() {
+      localStorage.setItem('appStatus', JSON.stringify({time: this.displayedTime, color: this.currentColor, lwg: this.lastWasGreen}))
+    },
   }
 }
 </script>
