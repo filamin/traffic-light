@@ -1,6 +1,9 @@
 <template>
   <div id='app'>
-    <router-view/>
+    <router-view :time="displayedTime" />
+    <div class="timer">
+      {{displayedTime}}
+    </div>
   </div>
 </template>
 
@@ -12,6 +15,7 @@ export default {
   data() {
     return {
       lastWasGreen: false,
+      displayedTime: 0,
     }
   },
   computed: {
@@ -44,15 +48,20 @@ export default {
     },
     async timer(sec, nextColor) {
       const router = this.$router
+      const setTime = (time) => this.setDisplayedTime(time);
       let secToNextColor = sec
-
+      setTime(secToNextColor)
       let timer = setInterval(function() {
         secToNextColor--
-        if (secToNextColor < 0) {
+        setTime(secToNextColor)
+        if (secToNextColor === 0) {
           clearInterval(timer)
           router.push(`/${nextColor}`)
         }
       }, 1000)
+    },
+    setDisplayedTime(time) {
+      this.displayedTime = time
     }
   }
 }
@@ -65,5 +74,18 @@ export default {
 #app {
   height: 100vh;
   width: 100vw;
+  position: relative;
+}
+.timer {
+  position: absolute;
+  top: 0;
+  width: 150px;
+  padding: 20px 0;
+  text-align: center;
+  color: white;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 24px;
+  background: rgba(0, 0, 0, 0.4);
 }
 </style>
